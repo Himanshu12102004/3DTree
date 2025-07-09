@@ -1,15 +1,19 @@
 #version 300 es
 precision highp float;
 out vec4 fragColor;
+
 uniform float minI;
 uniform float maxY;
 uniform float minX;
 uniform float maxX;
 uniform float minZ;
 uniform float maxZ;
+
 uniform vec3 cameraPosition;
 uniform vec2 cameraDirection;
+
 uniform float iTime;
+
 uniform vec2 viewportDimensions;
 
 uniform float angleX;
@@ -22,9 +26,10 @@ uniform float rootHeight;
 uniform vec3 rootColor;
 uniform vec3 branchColor;
 uniform float dampeningFactor;
-
 uniform vec3 cellDimensions;
+
 vec3 materialColor=vec3(0.0);
+
 mat2 rot2D(float angle){
   float s=sin(angle);
   float c=cos(angle);
@@ -43,35 +48,17 @@ float sdBox( vec3 p, vec3 b )
   vec3 q = abs(p) - b;
   return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
-float sdVerticalCapsule( vec3 p, float h, float r )
-{
-  p.y -= clamp( p.y, 0.0, h );
-  return length( p ) - r;
-}
 
 float opSmoothUnion( float d1, float d2, float k )
 {
     float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );
     return mix( d2, d1, h ) - k*h*(1.0-h);
 }
-vec3 rodriguesRotate(vec3 v, vec3 k, float angle) {
-  return v * cos(angle)
-       + cross(k, v) * sin(angle)
-       + k * dot(k, v) * (1.0 - cos(angle));
-}
-vec3 getDirection(float angleX, float angleZ) {
-    float x = sin(angleX) * cos(angleZ);
-    float y = cos(angleX);
-    float z = sin(angleX) * sin(angleZ);
-    return normalize(vec3(x, y, z));
-}
 
 float SDF(vec3 p){
   float lastHeight=rootHeight;
   float lastRadius=rootRadius;
-  // Scroll the scene in Y
 
-  // Hardcoded cell dimensions
   vec3 q=p;
   // q.z += iTime*cellDimensions.z*0.5;
   // Modular repetition with centering
@@ -83,22 +70,28 @@ float SDF(vec3 p){
   materialColor=rootColor;
   float ground=q.y+0.75;
   d=opSmoothUnion(root,ground,1.0);
+  float radiusDecayFactor = 2.414213562373095; // 1 + sqrt(2)
   for(int i=0;i<iterationCount;i++){
-  float branchHeight=lastHeight*dampeningFactor;
-  float branchRadius=lastRadius/(1.0+sqrt(2.0));
-  q = vec3(abs(q.x),q.y,abs(q.z))-vec3(branchRadius,lastHeight,branchRadius);
-  float angle=1.0;
-  float negativeAngleX=-angleX;
-  q.xy*=rot2D(angleZ);
-  q.yz*=rot2D(negativeAngleX);
-  float cylinder = sdCappedCylinder(q,branchHeight,branchRadius);
-  if(d>cylinder){
-  float t = float(i) / 10.0; 
-  materialColor = mix(rootColor, branchColor, t); 
-  }
-   d=opSmoothUnion(d,cylinder,opSmoothRatio);
-  lastHeight=branchHeight;
-  lastRadius=branchRadius;
+    float branchHeight=lastHeight*dampeningFactor;
+    float branchRadius=lastRadius/(radiusDecayFactor);
+
+    q = vec3(abs(q.x),q.y,abs(q.z))-vec3(branchRadius,lastHeight,branchRadius);
+
+    float negativeAngleX=-angleX;
+    q.xy*=rot2D(angleZ);
+    q.yz*=rot2D(negativeAngleX);
+
+    float cylinder = sdCappedCylinder(q,branchHeight,branchRadius);
+
+    if(d>cylinder){
+    float t = float(i) / 10.0; 
+    materialColor = mix(rootColor, branchColor, t); 
+    }
+
+    d=opSmoothUnion(d,cylinder,opSmoothRatio);
+
+    lastHeight=branchHeight;
+    lastRadius=branchRadius;
   }
   return d;
 }
@@ -119,12 +112,8 @@ vec3 getNormal(vec3 p) {
   return normalize(normal);
 }
 
-float sdPlane( vec3 p, vec3 n, float h )
-{
-  return dot(p,n) + h;
-}
-
 void main() {
+  
   vec2 fragCoord= vec2(
     gl_FragCoord.x * (maxX - minX) / viewportDimensions.x + minX,
     gl_FragCoord.y * (maxY - minI) / viewportDimensions.y + minI
@@ -191,6 +180,6 @@ if(hit){
   fragColor = vec4(materialColor,1.0);
 }
 else{
-  fragColor = vec4(0.0, 0.0, 0.0, 1.0); // sky blue
+  fragColor = vec4(0.0, 0.0, 0.0, 1.0); 
 }
 }

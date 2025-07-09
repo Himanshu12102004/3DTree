@@ -12,13 +12,18 @@ import { WiStrongWind } from "react-icons/wi";
 type MenuBarProps = {
   isDark: boolean;
   setIsDark: (value: boolean) => void;
+  isSettingsOpen: boolean;
 };
 
 function toRadian(angle: number): number {
   return (angle * Math.PI) / 180;
 }
 
-const MenuBar: React.FC<MenuBarProps> = ({ isDark, setIsDark }) => {
+const MenuBar: React.FC<MenuBarProps> = ({
+  isDark,
+  setIsDark,
+  isSettingsOpen,
+}) => {
   const [angleX, setAngleX] = useState(0);
   const [angleZ, setAngleZ] = useState(0);
   const [iterationCount, setIterationCount] = useState(0);
@@ -56,7 +61,6 @@ const MenuBar: React.FC<MenuBarProps> = ({ isDark, setIsDark }) => {
     setRootRadius(GlobalVariables.rootRadius);
     setRootHeight(GlobalVariables.rootHeight);
     setRootColor(giveRgba(GlobalVariables.rootColor));
-    console.log(giveRgba(GlobalVariables.rootColor));
     setBranchColor(giveRgba(GlobalVariables.branchColor));
     setDampeningFactor(GlobalVariables.dampeningFactor);
     setCellDimensionsX(GlobalVariables.cellDimensions[0]);
@@ -180,135 +184,127 @@ const MenuBar: React.FC<MenuBarProps> = ({ isDark, setIsDark }) => {
   };
 
   return (
-    <div className="relative">
-      <div className="pt-20 pl-15 pb-10 h-screen overflow-y-auto">
-        <div className="text-4xl text-foreground">Controls</div>
-        <div className="absolute right-15 top-5">
-          <ToggleButton
-            IconOn={IoMdSunny}
-            IconOff={IoMdMoon}
-            currentState={isDark}
-            setcurrentState={setIsDark}
-          />
-        </div>
+    <div
+      className={`bg-background ${isSettingsOpen?"w-full lg:w-1/3":"w-0"} h-screen absolute top-0 right-0 z-20 shadow-xl`}
+      style={{
+        overflowY: "scroll",
+        transform: isSettingsOpen ? "translateX(0)" : "translateX(100%)",
+        opacity: isSettingsOpen ? "1" : "0",
+        transition: "all 0.1s",
+      }}
+    >
+      <div className="relative ">
+        <div className="pt-20 pl-15 pb-10 h-screen overflow-y-scroll">
+          <div className="text-4xl text-foreground">Controls</div>
+          <div className="absolute right-15 top-5">
+            <ToggleButton
+              IconOn={IoMdSunny}
+              IconOff={IoMdMoon}
+              currentState={isDark}
+              setcurrentState={setIsDark}
+            />
+          </div>
 
-        <div className="pt-6 flex flex-col gap-2">
-          <div>
-            <div className="text-foreground">Angle-X</div>
+          <div className="pt-6 flex flex-col gap-2">
             <Slider
+              header="Angle-X"
               minimum={0}
               maximum={90}
               value={angleX}
               handler={handleAngleXChange}
-              icon={<PiAngle size={24} />}
+              Icon={PiAngle}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Angle-Z</div>
             <Slider
+              header="Angle-Z"
               minimum={0}
               maximum={90}
               value={angleZ}
               handler={handleAngleZChange}
-              icon={<PiAngle size={24} />}
+              Icon={PiAngle}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Root radius</div>
             <Slider
+              header="Root Radius"
               minimum={0.5}
               maximum={10}
               step={0.01}
               value={rootRadius}
               handler={handleRootRadiusChange}
-              icon={<PiCompassTool size={24} />}
+              Icon={PiCompassTool}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Root Height</div>
             <Slider
+              header="Root Height"
               minimum={0.5}
               maximum={10}
               step={0.01}
               value={rootHeight}
               handler={handleRootHeightChange}
-              icon={<RxHeight size={24} />}
+              Icon={RxHeight}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Branch Levels</div>
             <Slider
+              header="Branching Levels"
               minimum={1}
               maximum={30}
               value={iterationCount}
               handler={handleIterationCountChange}
-              icon={<Tree size={24} />}
+              Icon={Tree}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Smoothing Factor</div>
             <Slider
+              header="Smoothing factor"
               minimum={0.000001}
               maximum={5}
               step={0.000001}
               value={opSmoothRatio}
               handler={handleOpSmoothRatioChange}
-              icon={<SlidersHorizontal size={24} />}
+              Icon={SlidersHorizontal}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Dampening Factor</div>
             <Slider
+              header="Dampening Factor"
               minimum={0.01}
               maximum={1}
               step={0.001}
               value={dampningFactor}
               handler={handleDampeningFactorChange}
-              icon={<WiStrongWind size={24} />}
+              Icon={WiStrongWind}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Cell Dimension-X</div>
             <Slider
+              header="Cell Dimension-X"
               minimum={1}
               maximum={100}
               step={1}
               value={cellDimensionsX}
               handler={handleCellDimensionsChangeX}
-              icon={<RxDimensions size={22} />}
+              Icon={RxDimensions}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Cell Dimension-Z</div>
             <Slider
+              header="Cell Dimension-Z"
               minimum={1}
               maximum={100}
               step={1}
               value={cellDimensionsZ}
               handler={handleCellDimensionsChangeZ}
-              icon={<RxDimensions size={22} />}
+              Icon={RxDimensions}
             />
-          </div>
 
-          <div>
-            <div className="text-foreground">Root Color</div>
-            <ColorPicker color={rootColor} handler={handleRootColorChange} />
-          </div>
+            <div>
+              <div className="text-foreground">Root Color</div>
+              <ColorPicker color={rootColor} handler={handleRootColorChange} />
+            </div>
 
-          <div>
-            <div className="text-foreground">Branch Color</div>
-            <ColorPicker
-              color={branchColor}
-              handler={handleBranchColorChange}
-            />
+            <div>
+              <div className="text-foreground">Branch Color</div>
+              <ColorPicker
+                color={branchColor}
+                handler={handleBranchColorChange}
+              />
+            </div>
           </div>
         </div>
       </div>
