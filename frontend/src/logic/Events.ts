@@ -109,7 +109,7 @@ export default class Events {
       Events.hasPassedDragThreshold = false;
       return;
     }
-
+    
     const dx = e.clientX - Events.dragStartPos.x;
     const dy = e.clientY - Events.dragStartPos.y;
     const sensitivity = 0.005;

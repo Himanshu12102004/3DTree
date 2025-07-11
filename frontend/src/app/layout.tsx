@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={orbitron.className}>
+    <html lang="en" className={`${orbitron.className} bg-black`}>
       <body
         className={`antialiased text-foreground`}
       >

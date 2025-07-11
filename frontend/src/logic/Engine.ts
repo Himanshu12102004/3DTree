@@ -122,6 +122,7 @@ class Engine {
         GlobalVariables.program,
         "cellDimensions"
       ) as WebGLUniformLocation;
+
     const canvasVerticies = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     GlobalVariables.verticesVao = createVao(
       [
@@ -205,10 +206,13 @@ class Engine {
     let lastTime = performance.now();
     let frameCount = 0;
     let fps = 0;
-
+    let lastFrameTime = performance.now();
     const animate = () => {
       const now = performance.now();
+      const iTime = now / 1000;
       const delta = now - lastTime;
+      const deltaPerFrame = now - lastFrameTime;
+      lastFrameTime = now;
       frameCount++;
       if (delta >= 1000) {
         fps = frameCount;
@@ -218,14 +222,42 @@ class Engine {
         GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
       }
       if (GlobalVariables.isAutoPilot) {
-        const speed =
-          (GlobalVariables.cellDimensions[0] +
-            GlobalVariables.cellDimensions[1] +
-            GlobalVariables.cellDimensions[2]) /
-          (1.5 * fps);
-        Events.moveInDirecionOfCamera(speed);
+        if (!GlobalVariables.autoPilotBrakesInitiated) {
+          GlobalVariables.autoPilotSpeed +=
+            GlobalVariables.autoPilotAcceleration * deltaPerFrame;
+          GlobalVariables.autoPilotSpeed = Math.min(
+            (GlobalVariables.cellDimensions[0] +
+              GlobalVariables.cellDimensions[2]) /
+              (3 * fps),
+            GlobalVariables.autoPilotSpeed
+          );
+        } else {
+          GlobalVariables.autoPilotSpeed -=
+            GlobalVariables.autoPilotAcceleration * deltaPerFrame;
+          GlobalVariables.autoPilotSpeed = Math.max(
+            0,
+            GlobalVariables.autoPilotSpeed
+          );
+        }
+        Events.moveInDirecionOfCamera(GlobalVariables.autoPilotSpeed);
       }
-      gl.uniform1f(GlobalVariables.uniforms.iTime!, now / 1000);
+      if (GlobalVariables.isBreathing) {
+        GlobalVariables.breathingITime += deltaPerFrame;
+        const breathingSinParam = GlobalVariables.breathingITime / 2000;
+        GlobalVariables.rootRadiusForBreathing =
+          GlobalVariables.rootRadius + Math.sin(breathingSinParam) * 0.7;
+        GlobalVariables.rootHeightForBreathing =
+          GlobalVariables.rootHeight + Math.sin(breathingSinParam) * 0.7;
+        GlobalVariables.gl.uniform1f(
+          GlobalVariables.uniforms.rootHeight!,
+          GlobalVariables.rootHeightForBreathing
+        );
+        GlobalVariables.gl.uniform1f(
+          GlobalVariables.uniforms.rootRadius!,
+          GlobalVariables.rootRadiusForBreathing
+        );
+      }
+      gl.uniform1f(GlobalVariables.uniforms.iTime!, iTime);
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
       gl.bindVertexArray(GlobalVariables.verticesVao);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);

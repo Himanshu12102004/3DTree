@@ -28,6 +28,7 @@ uniform vec3 branchColor;
 uniform float dampeningFactor;
 uniform vec3 cellDimensions;
 
+
 vec3 materialColor=vec3(0.0);
 
 mat2 rot2D(float angle){
@@ -56,6 +57,7 @@ float opSmoothUnion( float d1, float d2, float k )
 }
 
 float SDF(vec3 p){
+
   float lastHeight=rootHeight;
   float lastRadius=rootRadius;
 
@@ -113,7 +115,7 @@ vec3 getNormal(vec3 p) {
 }
 
 void main() {
-  
+
   vec2 fragCoord= vec2(
     gl_FragCoord.x * (maxX - minX) / viewportDimensions.x + minX,
     gl_FragCoord.y * (maxY - minI) / viewportDimensions.y + minI

@@ -60,6 +60,8 @@ class GlobalVariables {
   static opSmoothRatio: number;
   static rootRadius: number;
   static rootHeight: number;
+  static rootRadiusForBreathing: number;
+  static rootHeightForBreathing: number;
   static rootColor: [number, number, number];
   static branchColor: [number, number, number];
   static dampeningFactor: number;
@@ -67,6 +69,11 @@ class GlobalVariables {
   static isInitialized = false;
   static navigationSpeed: number;
   static isAutoPilot = false;
+  static isBreathing = true;
+  static breathingITime = 0;
+  static autoPilotAcceleration = 0.0001;
+  static autoPilotSpeed = 0;
+  static autoPilotBrakesInitiated = false;
   static init(canvas: HTMLCanvasElement, canvasParent: HTMLDivElement) {
     this.canvas = canvas;
     this.canvasParent = canvasParent;
@@ -92,10 +99,10 @@ class GlobalVariables {
     this.opSmoothRatio = 2.98;
     this.rootRadius = 1;
     this.rootHeight = 4.22;
-    this.rootColor = [0.07, 0.07, 0.07];
-    this.branchColor = [0, 0.023, 0.564];
+    this.rootColor = [0.08, 0.08, 0.08];
+    this.branchColor = [0.255, 0.0039, 0.365];
     this.dampeningFactor = 1;
-    this.cellDimensions = [20, 0, 19];
+    this.cellDimensions = [32, 0, 20];
     this.navigationSpeed = 10;
     this.isInitialized = true;
   }

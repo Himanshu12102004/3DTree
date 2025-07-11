@@ -9,6 +9,7 @@ type CanvasWrapperProps = {
 };
 
 export const CanvasWrapper = ({ children }: CanvasWrapperProps) => {
+  console.log("canvas Wrapper");
   return <div className="canvas-parent h-screen">{children}</div>;
 };
 

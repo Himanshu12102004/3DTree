@@ -185,7 +185,9 @@ const MenuBar: React.FC<MenuBarProps> = ({
 
   return (
     <div
-      className={`bg-background ${isSettingsOpen?"w-full lg:w-1/3":"w-0"} h-screen absolute top-0 right-0 z-20 shadow-xl`}
+      className={`bg-background ${
+        isSettingsOpen ? "w-full lg:w-1/3" : "w-0"
+      } h-screen absolute top-0 right-0 z-20 shadow-xl`}
       style={{
         overflowY: "scroll",
         transform: isSettingsOpen ? "translateX(0)" : "translateX(100%)",
@@ -202,6 +204,7 @@ const MenuBar: React.FC<MenuBarProps> = ({
               IconOff={IoMdMoon}
               currentState={isDark}
               setcurrentState={setIsDark}
+              showTipOnActive={true}
             />
           </div>
 
