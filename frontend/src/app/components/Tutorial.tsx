@@ -27,44 +27,51 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
 }) => {
   const [showNextButton, setShowNextButton] = useState(false);
   return (
-    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-40">
-      <div></div>
-      <div
-        className="bg-[rgba(0,0,0,0.5)] p-7 max-w-[400px] leading-relaxed text-foreground text-center"
-        style={{ transition: "all 0.5s ease-in-out" }}
-      >
-        <Typewriter
-          key={text}
-          words={[text]}
-          cursor
-          cursorStyle="_"
-          typeSpeed={70}
-          delaySpeed={1000}
-          loop={1}
-          onType={() => {
-            currentTypedIndex++;
-            if (currentTypedIndex === text.length - 1) {
-              setTimeout(() => {
-                setShowNextButton(true);
-              }, 200);
-            }
-          }}
-        />
-        <br/>
-      <Button
-          text={currentPage != tutorialText.length - 1 ? "Next" : "Let's Go"}
-          shouldShow={showNextButton}
-          handler={() => {
-            if (currentPage == tutorialText.length - 1) {
-              window.localStorage.setItem("seenTutorial", "Yes");
-              setSeenTutorial(true);
-            } else {
-              currentTypedIndex = 0;
-              setCurrentPage(currentPage + 1);
-              setShowNextButton(false);
-            }
-          }}
-        ></Button>
+    <div>
+      <div className="absolute top-0 right-0 left-0 bottom-0 backdrop-blur-xs bg-[rgba(0,0,0,0.5)] z-20"></div>
+      <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-40">
+        <div
+          className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4"
+          style={{ transition: "all 0.5s ease-in-out" }}
+        >
+          <div>
+            <Typewriter
+              key={text}
+              words={[text]}
+              cursor
+              cursorStyle="_"
+              typeSpeed={70}
+              delaySpeed={1000}
+              loop={1}
+              onType={() => {
+                currentTypedIndex++;
+                if (currentTypedIndex === text.length - 1) {
+                  setTimeout(() => {
+                    setShowNextButton(true);
+                  }, 500);
+                }
+              }}
+            />
+          </div>
+          {
+            <Button
+              text={
+                currentPage != tutorialText.length - 1 ? "Next" : "Let's Go"
+              }
+              shouldShow={showNextButton}
+              handler={() => {
+                if (currentPage == tutorialText.length - 1) {
+                  window.localStorage.setItem("seenTutorial", "Yes");
+                  setSeenTutorial(true);
+                } else {
+                  currentTypedIndex = 0;
+                  setCurrentPage(currentPage + 1);
+                  setShowNextButton(false);
+                }
+              }}
+            ></Button>
+          }
+        </div>
       </div>
     </div>
   );
