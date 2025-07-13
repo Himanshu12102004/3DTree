@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import GlobalVariables from "@/logic/GlobalVariables";
 import Engine from "@/logic/Engine";
-
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 export interface Creation {
   _id?: string;
   name: string;
@@ -32,7 +32,7 @@ const GhostCardGrid = () => {
       {Array.from({ length: 9 }).map((_, i) => (
         <div
           key={i}
-          className="w-96 h-72 bg-zinc-800 rounded-md animate-pulse flex flex-col justify-between p-4"
+          className="w-90 h-72 bg-zinc-800 rounded-md animate-pulse flex flex-col justify-between p-4"
         >
           <div className="h-6 bg-zinc-700 rounded w-2/3 mb-2"></div>
           <div className="h-4 bg-zinc-700 rounded w-full mb-1"></div>
@@ -52,7 +52,7 @@ const Card = ({
   details: Creation;
   setIsDiscoverOpen: (value: boolean) => void;
 }) => (
-  <div className=" w-96 p-6 border rounded bg-black flex flex-col justify-between gap-5">
+  <div className=" w-90 p-6 border rounded bg-black flex flex-col justify-between gap-5">
     <img src={details.imageUrl} alt="" className=" object-contain rounded" />
     <div className="flex gap-4 flex-col">
       <div>{details.name}</div>
@@ -96,39 +96,73 @@ interface DiscoverProps {
 const Discover = ({ setIsDiscoverOpen }: DiscoverProps) => {
   const [creations, setCreations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [pageNo, setPageNo] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchCreations = async () => {
+    setIsLoading(true);
+    const res = await fetch(`/api/creations?page=${pageNo}`);
+    const data = await res.json();
+    setTotalPages(data.totalPages);
+    setCreations(data.creations);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    const fetchCreations = async () => {
-      setIsLoading(true);
-      const res = await fetch("/api/creations");
-      const data = await res.json();
-      setCreations(data);
-      setIsLoading(false);
-    };
     fetchCreations();
-  }, []);
+  }, [pageNo]);
 
   return (
     <div>
       <div className="absolute top-1/2 left-1/2 z-40 transform -translate-x-1/2 -translate-y-1/2 flex flex-col p-10 gap-5 h-full overflow-y-auto w-full items-center bg-[rgba(0,0,0,0.5)] backdrop-blur-md ">
         <div className="text-2xl mb-4 text-center">Discover</div>
-        <div className=" overflow-scroll">
-          {isLoading ? (
+        {isLoading ? (
+          <div className="h-[78vh] overflow-scroll">
             <GhostCardGrid />
-          ) : creations.length === 0 ? (
-            <div className="text-white text-center">No creations found.</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 ">
-              {creations.map((item: Creation) => (
-                <Card
-                  key={item._id}
-                  details={item}
-                  setIsDiscoverOpen={setIsDiscoverOpen}
-                />
-              ))}
+          </div>
+        ) : creations.length === 0 ? (
+          <div className="text-white text-center">No creations found.</div>
+        ) : (
+          <div className="flex items-center gap-8">
+            <div
+              className={`${
+                pageNo === 1
+                  ? "bg-[rgba(50,50,50)] cursor-not-allowed"
+                  : "bg-white cursor-pointer"
+              } text-center rounded-full p-4`}
+              onClick={() => {
+                if (pageNo === 1) return;
+                setPageNo(pageNo - 1);
+              }}
+            >
+              <FaChevronLeft className="text-black" size={24} />
             </div>
-          )}
-        </div>
+            <div className="h-[78vh] overflow-scroll">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 self-start">
+                {creations.map((item: Creation) => (
+                  <Card
+                    key={item._id}
+                    details={item}
+                    setIsDiscoverOpen={setIsDiscoverOpen}
+                  />
+                ))}
+              </div>
+            </div>
+            <div
+              className={`${
+                pageNo === totalPages
+                  ? "bg-[rgba(50,50,50)] cursor-not-allowed"
+                  : "bg-white cursor-pointer"
+              } text-center rounded-full p-4`}
+              onClick={() => {
+                if (pageNo === totalPages) return;
+                setPageNo(pageNo + 1);
+              }}
+            >
+              <FaChevronRight className="text-black" size={24} />
+            </div>
+          </div>
+        )}
         <Button
           shouldShow={true}
           handler={() => {
@@ -136,7 +170,7 @@ const Discover = ({ setIsDiscoverOpen }: DiscoverProps) => {
             setIsDiscoverOpen(false);
           }}
           text="Close"
-        ></Button>
+        />
       </div>
     </div>
   );

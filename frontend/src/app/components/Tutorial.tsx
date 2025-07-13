@@ -40,7 +40,7 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
               words={[text]}
               cursor
               cursorStyle="_"
-              typeSpeed={70}
+              typeSpeed={30}
               delaySpeed={1000}
               loop={1}
               onType={() => {
