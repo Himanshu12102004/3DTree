@@ -2,17 +2,8 @@
 precision highp float;
 out vec4 fragColor;
 
-uniform float minI;
-uniform float maxY;
-uniform float minX;
-uniform float maxX;
-uniform float minZ;
-uniform float maxZ;
-
 uniform vec3 cameraPosition;
 uniform vec2 cameraDirection;
-
-uniform float iTime;
 
 uniform vec2 viewportDimensions;
 
@@ -28,6 +19,7 @@ uniform vec3 branchColor;
 uniform float dampeningFactor;
 uniform vec3 cellDimensions;
 
+uniform int maxRayMarch;
 
 vec3 materialColor=vec3(0.0);
 
@@ -41,13 +33,6 @@ float sdCappedCylinder( vec3 p, float h, float r )
 {
   vec2 d = abs(vec2(length(p.xz),p.y)) - vec2(r,h);
   return min(max(d.x,d.y),0.0) + length(max(d,0.0));
-}
-
-
-float sdBox( vec3 p, vec3 b )
-{
-  vec3 q = abs(p) - b;
-  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
 }
 
 float opSmoothUnion( float d1, float d2, float k )
@@ -86,7 +71,7 @@ float SDF(vec3 p){
     float cylinder = sdCappedCylinder(q,branchHeight,branchRadius);
 
     if(d>cylinder){
-    float t = float(i) / 10.0; 
+    float t = float(i) / float(iterationCount); 
     materialColor = mix(rootColor, branchColor, t); 
     }
 
@@ -116,14 +101,11 @@ vec3 getNormal(vec3 p) {
 
 void main() {
 
-  vec2 fragCoord= vec2(
-    gl_FragCoord.x * (maxX - minX) / viewportDimensions.x + minX,
-    gl_FragCoord.y * (maxY - minI) / viewportDimensions.y + minI
-  );
-
     vec2 uv=(gl_FragCoord.xy*2.0-viewportDimensions.xy)/viewportDimensions.y;
+
   //Initialization
   vec3 ro=cameraPosition;//Ray origin or camera location
+
   vec3 rd=normalize(vec3(uv,1));//Ray direction 
   float t=0.0; //total distance travelled by a ray in the scene
 
@@ -135,7 +117,7 @@ void main() {
   bool hit=true;
   //Raymarching
   vec3 p;
-  for(int i=0;i<80;i++){
+  for(int i=0;i<maxRayMarch;i++){
     p=ro+rd*t;
     float d=SDF(p);
     t+=d;

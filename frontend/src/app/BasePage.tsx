@@ -1,19 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Canvas } from "./components/Canvas";
-import { FaSlash, FaTimes } from "react-icons/fa";
-import { motion } from "framer-motion";
-import { ToggleButton } from "./components/ToggleButton";
+import { FaSave, FaSlash } from "react-icons/fa";
+import { IconButton, ToggleIcon } from "./components/Icons";
 import MenuBar from "./components/MenuBar";
 import GlobalVariables from "@/logic/GlobalVariables";
 import { IoMdSettings } from "react-icons/io";
 import { IoCarSport } from "react-icons/io5";
 import Tutorial from "./components/Tutorial";
 import { BsLungsFill } from "react-icons/bs";
+import { MdOutlineTravelExplore } from "react-icons/md";
+import SaveThePattern from "./components/SaveThePattern";
+import { Toaster } from "react-hot-toast";
+import Discover from "./components/Discover";
+import Engine from "@/logic/Engine";
 
 export function createSlashedIcon(Icon: React.ElementType): React.ElementType {
   const SlashedIcon: React.FC<{ size?: number; color?: string }> = ({
-    size = 32,
+    size = 24,
   }) => (
     <div style={{ position: "relative", width: size, height: size }}>
       <Icon size={size} className="text-foreground" />
@@ -33,50 +37,43 @@ export function createSlashedIcon(Icon: React.ElementType): React.ElementType {
 
 const BasePage = () => {
   const [seenTutorial, setSeenTutorial] = useState(false);
-  useEffect(() => {
-    console.log("hjhj")
-  const seen = window.localStorage.getItem("seenTutorial") === "Yes";
-  setSeenTutorial(seen);
-}, []);
-  const [isDark, setIsDark] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAutoPilot, setIsAutoPilot] = useState(false);
   const [isBreathing, setIsBreathing] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
+
+  useEffect(() => {
+    const seen = window.localStorage.getItem("seenTutorial") === "Yes";
+    setSeenTutorial(seen);
+  }, []);
+
   return (
-    <div
-      className={`${isDark ? "dark" : ""}`}
-      style={{ width: "100vw", height: "100vh", overflow: "hidden" }}
-    >
+    <div className={`dark text-foreground`}>
+      <Toaster position="bottom-right" />
+      {isSaving && <SaveThePattern setIsSaving={setIsSaving}></SaveThePattern>}
+      {isDiscoverOpen && (
+        <Discover
+          setIsDiscoverOpen={setIsDiscoverOpen}
+        ></Discover>
+      )}
       <div className="fps absolute bottom-0 right-0 text-foreground z-20">
         0 FPS
       </div>
-      <motion.div
-        className="absolute top-5 right-5 z-30 w-6 h-6 flex"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        <ToggleButton
-          IconOn={IoMdSettings}
-          IconOff={FaTimes}
-          currentState={isSettingsOpen}
-          setcurrentState={setIsSettingsOpen}
-          tip="Open the settings to tune different parameters."
-          showTipOnActive={false}
+      <div className="absolute top-7 z-10 right-5 flex flex-col gap-5">
+        <IconButton
+          Icon={IoMdSettings}
+          handler={() => {
+            setIsSettingsOpen(true);
+          }}
+          tip="Open the settings."
         />
-      </motion.div>
 
-      <motion.div
-        className="absolute top-5 right-15 z-10 w-6 h-6 flex"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        <ToggleButton
+        <ToggleIcon
           IconOn={IoCarSport}
           IconOff={createSlashedIcon(IoCarSport)}
           currentState={isAutoPilot}
-          setcurrentState={() => {
+          handler={() => {
             if (GlobalVariables.isAutoPilot) {
               GlobalVariables.autoPilotBrakesInitiated = true;
               setTimeout(() => {
@@ -89,38 +86,49 @@ const BasePage = () => {
             }
             setIsAutoPilot(!GlobalVariables.autoPilotBrakesInitiated);
           }}
-          tip="Toggle autopilot mode. It moves you forward automatically — just steer with your mouse."
+          tip="Auto-pilot mode: Just steer"
           showTipOnActive={true}
         />
-      </motion.div>
 
-      <motion.div
-        className="absolute top-5 right-25 z-10 w-6 h-6 flex"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      >
-        <ToggleButton
+        <ToggleIcon
           IconOn={BsLungsFill}
           IconOff={createSlashedIcon(BsLungsFill)}
           currentState={isBreathing}
-          setcurrentState={() => {
-            GlobalVariables.isBreathing = !GlobalVariables.isBreathing;
+          handler={(value) => {
+            GlobalVariables.isBreathing = value;
             setIsBreathing(GlobalVariables.isBreathing);
           }}
           tip="Toggle planet's breathing."
           showTipOnActive={true}
         />
-      </motion.div>
+
+        <IconButton
+          Icon={FaSave}
+          handler={() => {
+            setIsSaving(true);
+          }}
+          tip="Want your creation to be seen by everyone? Just save your settings and share away!"
+        />
+
+        <IconButton
+          Icon={MdOutlineTravelExplore}
+          handler={() => {
+            Engine.pause();
+            setIsDiscoverOpen(true);
+          }}
+          tip="Discover what others have created."
+        />
+      </div>
 
       <div>
         <MenuBar
-          isDark={isDark}
-          setIsDark={setIsDark}
+          setIsSettingsOpen={setIsSettingsOpen}
           isSettingsOpen={isSettingsOpen}
         />
       </div>
+
       <Canvas></Canvas>
+
       {!seenTutorial && (
         <Tutorial
           seenTutorial={seenTutorial}

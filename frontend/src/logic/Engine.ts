@@ -39,31 +39,13 @@ class Engine {
         GlobalVariables.program,
         "vertexPosition"
       );
-    GlobalVariables.uniforms.maxY = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program,
-      "maxY"
-    ) as WebGLUniformLocation;
-    GlobalVariables.uniforms.minI = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program,
-      "minI"
-    ) as WebGLUniformLocation;
-    GlobalVariables.uniforms.maxX = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program,
-      "maxX"
-    ) as WebGLUniformLocation;
-    GlobalVariables.uniforms.minX = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program,
-      "minX"
-    ) as WebGLUniformLocation;
+
     GlobalVariables.uniforms.viewportDimensions =
       GlobalVariables.gl.getUniformLocation(
         GlobalVariables.program,
         "viewportDimensions"
       ) as WebGLUniformLocation;
-    GlobalVariables.uniforms.iTime = GlobalVariables.gl.getUniformLocation(
-      GlobalVariables.program,
-      "iTime"
-    ) as WebGLUniformLocation;
+
     GlobalVariables.uniforms.cameraPosition =
       GlobalVariables.gl.getUniformLocation(
         GlobalVariables.program,
@@ -122,7 +104,11 @@ class Engine {
         GlobalVariables.program,
         "cellDimensions"
       ) as WebGLUniformLocation;
-
+    GlobalVariables.uniforms.maxRayMarch =
+      GlobalVariables.gl.getUniformLocation(
+        GlobalVariables.program,
+        "maxRayMarch"
+      ) as WebGLUniformLocation;
     const canvasVerticies = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     GlobalVariables.verticesVao = createVao(
       [
@@ -148,17 +134,17 @@ class Engine {
       GlobalVariables.dimensions.width,
       GlobalVariables.dimensions.height
     );
-    gl.uniform1f(uniformLocations.minI!, GlobalVariables.bounds.bottom);
-    gl.uniform1f(uniformLocations.maxY!, GlobalVariables.bounds.top);
-    gl.uniform1f(uniformLocations.minX!, GlobalVariables.bounds.left);
-    gl.uniform1f(uniformLocations.maxX!, GlobalVariables.bounds.right);
-    gl.uniform3fv(
+
+    gl.uniform3f(
       uniformLocations.cameraPosition!,
-      new Float32Array(GlobalVariables.cameraPosition)
+      GlobalVariables.cameraPosition[0],
+      GlobalVariables.cameraPosition[1],
+      GlobalVariables.cameraPosition[2]
     );
-    gl.uniform2fv(
+    gl.uniform2f(
       uniformLocations.cameraDirection!,
-      new Float32Array(GlobalVariables.cameraDirection)
+      GlobalVariables.cameraDirection[0],
+      GlobalVariables.cameraDirection[1]
     );
     gl.uniform1i(
       uniformLocations.iterationCount!,
@@ -178,22 +164,29 @@ class Engine {
     );
     gl.uniform1f(uniformLocations.rootRadius!, GlobalVariables.rootRadius);
     gl.uniform1f(uniformLocations.rootHeight!, GlobalVariables.rootHeight);
-    gl.uniform3fv(
+    gl.uniform3f(
       uniformLocations.rootColor!,
-      new Float32Array(GlobalVariables.rootColor)
+      GlobalVariables.rootColor[0],
+      GlobalVariables.rootColor[1],
+      GlobalVariables.rootColor[2]
     );
-    gl.uniform3fv(
+    gl.uniform3f(
       uniformLocations.branchColor!,
-      new Float32Array(GlobalVariables.branchColor)
+      GlobalVariables.branchColor[0],
+      GlobalVariables.branchColor[1],
+      GlobalVariables.branchColor[2]
     );
     gl.uniform1f(
       uniformLocations.dampeningFactor!,
       GlobalVariables.dampeningFactor
     );
-    gl.uniform3fv(
+    gl.uniform3f(
       uniformLocations.cellDimensions!,
-      new Float32Array(GlobalVariables.cellDimensions)
+      GlobalVariables.cellDimensions[0],
+      GlobalVariables.cellDimensions[1],
+      GlobalVariables.cellDimensions[2]
     );
+    gl.uniform1i(uniformLocations.maxRayMarch!, GlobalVariables.maxRayMarch);
   }
 
   static play() {
@@ -209,7 +202,6 @@ class Engine {
     let lastFrameTime = performance.now();
     const animate = () => {
       const now = performance.now();
-      const iTime = now / 1000;
       const delta = now - lastTime;
       const deltaPerFrame = now - lastFrameTime;
       lastFrameTime = now;
@@ -257,7 +249,6 @@ class Engine {
           GlobalVariables.rootRadiusForBreathing
         );
       }
-      gl.uniform1f(GlobalVariables.uniforms.iTime!, iTime);
       gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
       gl.bindVertexArray(GlobalVariables.verticesVao);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -273,5 +264,15 @@ class Engine {
       GlobalVariables.animationFrameNumber = -1;
     }
   }
+  static getCanvasBlob = async (): Promise<Blob | null> => {
+    const canvas = GlobalVariables.canvas as HTMLCanvasElement;
+    if (!canvas) return null;
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, "image/png");
+    });
+  };
 }
 export default Engine;

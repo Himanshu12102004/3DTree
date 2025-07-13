@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import MuiSlider from "@mui/material/Slider";
 
 interface SliderProps {
-  handler: (event: Event, value: number | number[]) => void;
+  handler: (event: Event, value: number) => void;
   value: number;
   minimum: number;
   maximum: number;
@@ -22,8 +22,10 @@ export default function Slider({
   Icon,
 }: SliderProps) {
   return (
-    <div >
-      <div className="text-foreground justify-end" style={{fontSize:"14px"}}>{header}</div>
+    <div>
+      <div className="text-foreground justify-end" style={{ fontSize: "14px" }}>
+        {header}
+      </div>
       <div className="flex items-center gap-4">
         {" "}
         <Icon size={20} className="text-foreground" />

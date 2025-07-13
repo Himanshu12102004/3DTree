@@ -27,7 +27,8 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
 }) => {
   const [showNextButton, setShowNextButton] = useState(false);
   return (
-    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-10">
+    <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-40">
+      <div></div>
       <div
         className="bg-[rgba(0,0,0,0.5)] p-7 max-w-[400px] leading-relaxed text-foreground text-center"
         style={{ transition: "all 0.5s ease-in-out" }}
@@ -49,8 +50,8 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
             }
           }}
         />
-        <br />
-        <Button
+        <br/>
+      <Button
           text={currentPage != tutorialText.length - 1 ? "Next" : "Let's Go"}
           shouldShow={showNextButton}
           handler={() => {
@@ -77,11 +78,11 @@ const Tutorial: React.FC<TutorialArgs> = ({
   seenTutorial,
   setSeenTutorial,
 }) => {
-  
   const [currentPage, setCurrentPage] = useState(0);
 
   return (
     <div>
+      {/* <div className="absolute z-30 top-0 left-0 right-0 bottom-0 backdrop-blur-xs"></div> */}
       {!seenTutorial && (
         <TutorialPage
           text={tutorialText[currentPage]}

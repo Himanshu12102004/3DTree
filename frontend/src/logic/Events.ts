@@ -13,7 +13,7 @@ export default class Events {
       z = 1;
 
     const cosY = Math.cos(angleYZ);
-    const  sinY = Math.sin(angleYZ);
+    const sinY = Math.sin(angleYZ);
     const y1 = y * cosY - z * sinY;
     const z1 = y * sinY + z * cosY;
     y = y1;
@@ -55,9 +55,11 @@ export default class Events {
     GlobalVariables.cameraPosition[0] += direction[0] * speed;
     GlobalVariables.cameraPosition[1] += direction[1] * speed;
     GlobalVariables.cameraPosition[2] += direction[2] * speed;
-    GlobalVariables.gl.uniform3fv(
+    GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cameraPosition!,
-      new Float32Array(GlobalVariables.cameraPosition)
+      GlobalVariables.cameraPosition[0],
+      GlobalVariables.cameraPosition[1],
+      GlobalVariables.cameraPosition[2]
     );
   }
   static keydownCallBack(e: KeyboardEvent) {
@@ -78,38 +80,13 @@ export default class Events {
       Events.moveInDirecionOfCamera(speed);
     }
   }
-  static zoomEventCallback(e: WheelEvent) {
-    e.preventDefault();
-    if (e.deltaY < 0) {
-      GlobalVariables.zoomLevel *= 1.05;
-    } else {
-      GlobalVariables.zoomLevel *= 0.95;
-    }
-    const gl = GlobalVariables.gl;
-    const uniformLocations = GlobalVariables.uniforms;
-    const verticals =
-      GlobalVariables.dimensions.height / GlobalVariables.zoomLevel / 2;
-    const horizontals =
-      GlobalVariables.dimensions.width / GlobalVariables.zoomLevel / 2;
-    GlobalVariables.center.x =
-      (GlobalVariables.bounds.left + GlobalVariables.bounds.right) / 2;
-    GlobalVariables.bounds.bottom = GlobalVariables.center.y - verticals;
-    GlobalVariables.bounds.top = GlobalVariables.center.y + verticals;
-    GlobalVariables.bounds.left = GlobalVariables.center.x - horizontals;
-    GlobalVariables.bounds.right = GlobalVariables.center.x + horizontals;
-
-    gl.uniform1f(uniformLocations.minI!, GlobalVariables.bounds.bottom);
-    gl.uniform1f(uniformLocations.maxY!, GlobalVariables.bounds.top);
-    gl.uniform1f(uniformLocations.minX!, GlobalVariables.bounds.left);
-    gl.uniform1f(uniformLocations.maxX!, GlobalVariables.bounds.right);
-  }
-
+  
   static panDragCallback(e: MouseEvent) {
     if ((e.buttons & 1) === 0) {
       Events.hasPassedDragThreshold = false;
       return;
     }
-    
+
     const dx = e.clientX - Events.dragStartPos.x;
     const dy = e.clientY - Events.dragStartPos.y;
     const sensitivity = 0.005;
@@ -119,9 +96,10 @@ export default class Events {
 
     Events.dragStartPos = { x: e.clientX, y: e.clientY };
 
-    GlobalVariables.gl.uniform2fv(
+    GlobalVariables.gl.uniform2f(
       GlobalVariables.uniforms.cameraDirection!,
-      new Float32Array(GlobalVariables.cameraDirection)
+      GlobalVariables.cameraDirection[0],
+      GlobalVariables.cameraDirection[1]
     );
   }
 
@@ -132,20 +110,12 @@ export default class Events {
     }
   }
   static resize() {
-    const { bounds, uniforms, gl } = GlobalVariables;
+    const { uniforms, gl } = GlobalVariables;
     GlobalVariables.dimensions.height =
       GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.dimensions.width = GlobalVariables.canvasParent.clientWidth;
     GlobalVariables.canvas.height = GlobalVariables.canvasParent.clientHeight;
     GlobalVariables.canvas.width = GlobalVariables.canvasParent.clientWidth;
-    const verticals =
-      GlobalVariables.dimensions.height / GlobalVariables.zoomLevel / 2;
-    const horizontals =
-      GlobalVariables.dimensions.width / GlobalVariables.zoomLevel / 2;
-    GlobalVariables.bounds.bottom = GlobalVariables.center.y - verticals;
-    GlobalVariables.bounds.top = GlobalVariables.center.y + verticals;
-    GlobalVariables.bounds.left = GlobalVariables.center.x - horizontals;
-    GlobalVariables.bounds.right = GlobalVariables.center.x + horizontals;
     GlobalVariables.gl.viewport(
       0,
       0,
@@ -157,9 +127,5 @@ export default class Events {
       GlobalVariables.dimensions.width,
       GlobalVariables.dimensions.height
     );
-    gl.uniform1f(uniforms.minX!, bounds.left);
-    gl.uniform1f(uniforms.maxX!, bounds.right);
-    gl.uniform1f(uniforms.minI!, bounds.bottom);
-    gl.uniform1f(uniforms.maxY!, bounds.top);
   }
 }

@@ -1,9 +1,4 @@
-interface Bounds {
-  left: number;
-  right: number;
-  top: number;
-  bottom: number;
-}
+
 interface Dimensions {
   height: number;
   width: number;
@@ -11,13 +6,6 @@ interface Dimensions {
 
 interface UniformLocations {
   viewportDimensions?: WebGLUniformLocation;
-  minX?: WebGLUniformLocation;
-  maxX?: WebGLUniformLocation;
-  minI?: WebGLUniformLocation;
-  maxY?: WebGLUniformLocation;
-  maxZ?: WebGLUniformLocation;
-  minZ?: WebGLUniformLocation;
-  iTime?: WebGLUniformLocation;
   cameraPosition?: WebGLUniformLocation;
   cameraDirection?: WebGLUniformLocation;
   angleX?: WebGLUniformLocation;
@@ -30,6 +18,7 @@ interface UniformLocations {
   branchColor?: WebGLUniformLocation;
   dampeningFactor?: WebGLUniformLocation;
   cellDimensions?: WebGLUniformLocation;
+  maxRayMarch?: WebGLUniformLocation;
 }
 interface Point {
   x: number;
@@ -38,7 +27,6 @@ interface Point {
 class GlobalVariables {
   static canvas: HTMLCanvasElement;
   static canvasParent: HTMLDivElement;
-  static bounds: Bounds = { bottom: 0, top: 0, left: 0, right: 0 };
   static dimensions: Dimensions = { height: 0, width: 0 };
   static center: Point = { x: 0, y: 0 };
   static animationFrameNumber: number;
@@ -48,7 +36,6 @@ class GlobalVariables {
   static vertexPositionLocation: number;
   static program: WebGLProgram;
   static verticesVao: WebGLVertexArrayObject;
-  static zoomLevel: number;
   static uniforms: UniformLocations = {};
   static cameraPosition: number[];
   static cameraDirection: number[];
@@ -66,7 +53,9 @@ class GlobalVariables {
   static branchColor: [number, number, number];
   static dampeningFactor: number;
   static cellDimensions: [number, number, number];
+  static maxRayMarch: number;
   static isInitialized = false;
+  static isConfigurationChanged = false;
   static navigationSpeed: number;
   static isAutoPilot = false;
   static isBreathing = true;
@@ -74,21 +63,17 @@ class GlobalVariables {
   static autoPilotAcceleration = 0.0001;
   static autoPilotSpeed = 0;
   static autoPilotBrakesInitiated = false;
+
   static init(canvas: HTMLCanvasElement, canvasParent: HTMLDivElement) {
     this.canvas = canvas;
     this.canvasParent = canvasParent;
-    this.gl = canvas.getContext("webgl2") as WebGL2RenderingContext;
+    this.gl = canvas.getContext("webgl2", {
+      preserveDrawingBuffer: true,
+    }) as WebGL2RenderingContext;
     this.dimensions.height = this.canvasParent.clientHeight;
     this.dimensions.width = this.canvasParent.clientWidth;
     this.canvas.height = this.dimensions.height;
     this.canvas.width = this.dimensions.width;
-    this.zoomLevel = 100;
-    const verticals = this.dimensions.height / this.zoomLevel / 2;
-    const horizontals = this.dimensions.width / this.zoomLevel / 2;
-    this.bounds.bottom = this.center.y - verticals;
-    this.bounds.top = this.center.y + verticals;
-    this.bounds.left = this.center.x - horizontals;
-    this.bounds.right = this.center.y + horizontals;
     this.animationFrameNumber = -1;
     this.cameraPosition = [-3, 0, -7];
     this.cameraDirection = [0.5, -0.5];
@@ -105,6 +90,7 @@ class GlobalVariables {
     this.cellDimensions = [32, 0, 20];
     this.navigationSpeed = 10;
     this.isInitialized = true;
+    this.maxRayMarch = 80;
   }
 }
 export default GlobalVariables;

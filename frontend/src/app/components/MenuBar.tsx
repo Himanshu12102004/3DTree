@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ToggleButton } from "./ToggleButton";
-import { IoMdMoon, IoMdSunny } from "react-icons/io";
+import { IconButton } from "./Icons";
 import Slider from "./Slider";
 import GlobalVariables from "@/logic/GlobalVariables";
 import ColorPicker from "./ColorPicker";
@@ -8,10 +7,10 @@ import { PiAngle, PiCompassTool } from "react-icons/pi";
 import { SlidersHorizontal, Tree } from "phosphor-react";
 import { RxDimensions, RxHeight } from "react-icons/rx";
 import { WiStrongWind } from "react-icons/wi";
-
+import { FaTimes } from "react-icons/fa";
+import { HiOutlineLightBulb } from "react-icons/hi";
 type MenuBarProps = {
-  isDark: boolean;
-  setIsDark: (value: boolean) => void;
+  setIsSettingsOpen: (value: boolean) => void;
   isSettingsOpen: boolean;
 };
 
@@ -20,8 +19,7 @@ function toRadian(angle: number): number {
 }
 
 const MenuBar: React.FC<MenuBarProps> = ({
-  isDark,
-  setIsDark,
+  setIsSettingsOpen,
   isSettingsOpen,
 }) => {
   const [angleX, setAngleX] = useState(0);
@@ -43,10 +41,9 @@ const MenuBar: React.FC<MenuBarProps> = ({
   const [dampningFactor, setDampeningFactor] = useState(0);
   const [cellDimensionsX, setCellDimensionsX] = useState(0);
   const [cellDimensionsZ, setCellDimensionsZ] = useState(0);
-
+  const [maxRayMarch, setMaxRayMarch] = useState(0);
   useEffect(() => {
     const giveRgba = (color: [number, number, number]) => {
-      console.log("Color received:", color);
       return [
         Math.round(color[0] * 255),
         Math.round(color[1] * 255),
@@ -65,66 +62,55 @@ const MenuBar: React.FC<MenuBarProps> = ({
     setDampeningFactor(GlobalVariables.dampeningFactor);
     setCellDimensionsX(GlobalVariables.cellDimensions[0]);
     setCellDimensionsZ(GlobalVariables.cellDimensions[2]);
-  }, [GlobalVariables.isInitialized]);
-  const handleAngleXChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setAngleX(newValue);
-    GlobalVariables.angleX = newValue;
+    setMaxRayMarch(GlobalVariables.maxRayMarch);
+  }, [GlobalVariables.isInitialized, GlobalVariables.isConfigurationChanged]);
+
+  const handleAngleXChange = (e: Event, value: number) => {
+    GlobalVariables.angleX = value;
     GlobalVariables.gl.uniform1f(
       GlobalVariables.uniforms.angleX!,
-      toRadian(newValue)
+      toRadian(value)
     );
+    setAngleX(value);
   };
 
-  const handleAngleZChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setAngleZ(newValue);
-    GlobalVariables.angleZ = newValue;
+  const handleAngleZChange = (e: Event, value: number) => {
+    GlobalVariables.angleZ = value;
     GlobalVariables.gl.uniform1f(
       GlobalVariables.uniforms.angleZ!,
-      toRadian(newValue)
+      toRadian(value)
     );
+    setAngleZ(value);
   };
 
-  const handleIterationCountChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setIterationCount(newValue);
-    GlobalVariables.iterationCount = newValue;
+  const handleIterationCountChange = (e: Event, value: number) => {
+    GlobalVariables.iterationCount = value;
     GlobalVariables.gl.uniform1i(
       GlobalVariables.uniforms.iterationCount!,
-      newValue
+      value
     );
+    setIterationCount(value);
   };
-  const handleOpSmoothRatioChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setOpSmoothRatio(newValue);
-    GlobalVariables.opSmoothRatio = newValue;
+  const handleOpSmoothRatioChange = (e: Event, value: number) => {
+    GlobalVariables.opSmoothRatio = value;
     GlobalVariables.gl.uniform1f(
       GlobalVariables.uniforms.opSmoothRatio!,
-      newValue
+      value
     );
+    setOpSmoothRatio(value);
   };
-  const handleRootRadiusChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setRootRadius(newValue);
-    GlobalVariables.rootRadius = newValue;
-    GlobalVariables.gl.uniform1f(
-      GlobalVariables.uniforms.rootRadius!,
-      newValue
-    );
+  const handleRootRadiusChange = (e: Event, value: number) => {
+    GlobalVariables.rootRadius = value;
+    GlobalVariables.gl.uniform1f(GlobalVariables.uniforms.rootRadius!, value);
+    setRootRadius(value);
   };
 
-  const handleRootHeightChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setRootHeight(newValue);
-    GlobalVariables.rootHeight = newValue;
-    GlobalVariables.gl.uniform1f(
-      GlobalVariables.uniforms.rootHeight!,
-      newValue
-    );
+  const handleRootHeightChange = (e: Event, value: number) => {
+    GlobalVariables.rootHeight = value;
+    GlobalVariables.gl.uniform1f(GlobalVariables.uniforms.rootHeight!, value);
+    setRootHeight(GlobalVariables.rootHeight);
   };
   const handleRootColorChange = (color: [number, number, number]) => {
-    setRootColor(color);
     GlobalVariables.rootColor[0] = color[0] / 255;
     GlobalVariables.rootColor[1] = color[1] / 255;
     GlobalVariables.rootColor[2] = color[2] / 255;
@@ -134,9 +120,9 @@ const MenuBar: React.FC<MenuBarProps> = ({
       GlobalVariables.rootColor[1],
       GlobalVariables.rootColor[2]
     );
+    setRootColor(color);
   };
   const handleBranchColorChange = (color: [number, number, number]) => {
-    setBranchColor(color);
     GlobalVariables.branchColor[0] = color[0] / 255;
     GlobalVariables.branchColor[1] = color[1] / 255;
     GlobalVariables.branchColor[2] = color[2] / 255;
@@ -146,41 +132,43 @@ const MenuBar: React.FC<MenuBarProps> = ({
       GlobalVariables.branchColor[1],
       GlobalVariables.branchColor[2]
     );
+    setBranchColor(color);
   };
-  const handleDampeningFactorChange = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    setDampeningFactor(newValue);
-    GlobalVariables.dampeningFactor = newValue;
+  const handleDampeningFactorChange = (_: Event, value: number) => {
+    GlobalVariables.dampeningFactor = value;
     GlobalVariables.gl.uniform1f(
       GlobalVariables.uniforms.dampeningFactor!,
-      newValue
+      value
     );
+    setDampeningFactor(value);
   };
-  const handleCellDimensionsChangeX = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    // Assuming cell dimensions are uniform for simplicity
-    const cellDimensionX = newValue;
-    GlobalVariables.cellDimensions[0] = cellDimensionX;
+
+  const handleCellDimensionsChangeX = (_: Event, value: number) => {
+    GlobalVariables.cellDimensions[0] = value;
+    GlobalVariables.gl.uniform3f(
+      GlobalVariables.uniforms.cellDimensions!,
+      value,
+      GlobalVariables.cellDimensions[1],
+      GlobalVariables.cellDimensions[2]
+    );
+    setCellDimensionsX(value);
+  };
+
+  const handleCellDimensionsChangeZ = (_: Event, value: number) => {
+    GlobalVariables.cellDimensions[2] = value;
     GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cellDimensions!,
       GlobalVariables.cellDimensions[0],
       GlobalVariables.cellDimensions[1],
-      GlobalVariables.cellDimensions[2]
+      value
     );
-    setCellDimensionsX(GlobalVariables.cellDimensions[0]);
+    setCellDimensionsZ(value);
   };
-  const handleCellDimensionsChangeZ = (e: Event, value: number | number[]) => {
-    const newValue = value as number;
-    // Assuming cell dimensions are uniform for simplicity
-    const cellDimensionZ = newValue;
-    GlobalVariables.cellDimensions[2] = cellDimensionZ;
-    GlobalVariables.gl.uniform3f(
-      GlobalVariables.uniforms.cellDimensions!,
-      GlobalVariables.cellDimensions[0],
-      GlobalVariables.cellDimensions[1],
-      GlobalVariables.cellDimensions[2]
-    );
-    setCellDimensionsZ(GlobalVariables.cellDimensions[2]);
+
+  const handleMaxRayMarch = (_: Event, value: number) => {
+    GlobalVariables.maxRayMarch = value;
+    GlobalVariables.gl.uniform1i(GlobalVariables.uniforms.maxRayMarch!, value);
+    setMaxRayMarch(value);
   };
 
   return (
@@ -198,14 +186,13 @@ const MenuBar: React.FC<MenuBarProps> = ({
       <div className="relative ">
         <div className="pt-20 pl-15 pb-10 h-screen overflow-y-scroll">
           <div className="text-4xl text-foreground">Controls</div>
-          <div className="absolute right-15 top-5">
-            <ToggleButton
-              IconOn={IoMdSunny}
-              IconOff={IoMdMoon}
-              currentState={isDark}
-              setcurrentState={setIsDark}
-              showTipOnActive={true}
-            />
+          <div className="absolute right-5 top-5">
+            <IconButton
+              Icon={FaTimes}
+              handler={() => {
+                setIsSettingsOpen(false);
+              }}
+            ></IconButton>
           </div>
 
           <div className="pt-6 flex flex-col gap-2">
@@ -295,7 +282,15 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleCellDimensionsChangeZ}
               Icon={RxDimensions}
             />
-
+            <Slider
+              header="Max Ray March"
+              minimum={1}
+              maximum={100}
+              step={1}
+              value={maxRayMarch}
+              handler={handleMaxRayMarch}
+              Icon={HiOutlineLightBulb}
+            />
             <div>
               <div className="text-foreground">Root Color</div>
               <ColorPicker color={rootColor} handler={handleRootColorChange} />

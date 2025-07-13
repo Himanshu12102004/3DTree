@@ -8,7 +8,6 @@ interface ColorPickerProps {
 
 export default function ColorPicker({ color, handler }: ColorPickerProps) {
   const [visible, setVisible] = useState(false);
-  console.log("ColorPicker initialized with color:", color);
   const togglePicker = () => setVisible(!visible);
 
   return (
