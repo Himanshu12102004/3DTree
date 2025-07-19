@@ -206,13 +206,13 @@ class Engine {
       const deltaPerFrame = (now - lastFrameTime) * 0.001;
       lastFrameTime = now;
       frameCount++;
-      if (delta >= 1000) {
-        fps = frameCount;
-        frameCount = 0;
-        lastTime = now;
-        GlobalVariables.currentFps = fps;
-        GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
-      }
+      // if (delta >= 1000) {
+      //   fps = frameCount;
+      //   frameCount = 0;
+      //   lastTime = now;
+      //   GlobalVariables.currentFps = fps;
+      //   GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
+      // }
       if (GlobalVariables.isAutoPilot) {
         if (!GlobalVariables.cameraBrakesInitiated) {
           GlobalVariables.cameraSpeed +=
@@ -222,14 +222,8 @@ class Engine {
             GlobalVariables.cameraSpeed
           );
         } else {
-          console.log(
-            GlobalVariables.cameraAutopilotAcceleration,
-            deltaPerFrame,
-            GlobalVariables.cameraSpeed
-          );
           GlobalVariables.cameraSpeed -=
             GlobalVariables.cameraAutopilotAcceleration * deltaPerFrame;
-          console.log(GlobalVariables.cameraSpeed);
           GlobalVariables.cameraSpeed = Math.max(
             0,
             GlobalVariables.cameraSpeed
@@ -281,12 +275,11 @@ class Engine {
       }
       if (GlobalVariables.isBreathing) {
         GlobalVariables.breathingITime += deltaPerFrame;
-        const breathingSinParam = GlobalVariables.breathingITime/2;
+        const breathingSinParam = GlobalVariables.breathingITime / 2;
         GlobalVariables.rootRadiusForBreathing =
           GlobalVariables.rootRadius + Math.sin(breathingSinParam) * 0.7;
         GlobalVariables.rootHeightForBreathing =
           GlobalVariables.rootHeight + Math.sin(breathingSinParam) * 0.7;
-        console.log(breathingSinParam);
         GlobalVariables.gl.uniform1f(
           GlobalVariables.uniforms.rootHeight!,
           GlobalVariables.rootHeightForBreathing

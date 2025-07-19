@@ -133,8 +133,8 @@ export default class Events {
     }
   }
   static cameraDirectionHandler(e: MouseEvent) {
-    const dx = e.movementX;
-    const dy = e.movementY;
+    const dx = e.movementX*0.6;
+    const dy = e.movementY*0.6;
     const sensitivity = 0.005;
 
     GlobalVariables.cameraDirection[0] += dx * sensitivity;

@@ -24,7 +24,6 @@ export const Canvas = () => {
         setIsRestricted(true);
         return;
       }
-      console.log("canvas")
       await Engine.init();
       Events.attachEvents();
       Engine.play();
