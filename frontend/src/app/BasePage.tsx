@@ -53,9 +53,7 @@ const BasePage = () => {
       <Toaster position="bottom-right" />
       {isSaving && <SaveThePattern setIsSaving={setIsSaving}></SaveThePattern>}
       {isDiscoverOpen && (
-        <Discover
-          setIsDiscoverOpen={setIsDiscoverOpen}
-        ></Discover>
+        <Discover setIsDiscoverOpen={setIsDiscoverOpen}></Discover>
       )}
       <div className="fps absolute bottom-0 right-0 text-foreground z-20">
         0 FPS
@@ -75,16 +73,16 @@ const BasePage = () => {
           currentState={isAutoPilot}
           handler={() => {
             if (GlobalVariables.isAutoPilot) {
-              GlobalVariables.autoPilotBrakesInitiated = true;
+              GlobalVariables.cameraBrakesInitiated = true;
               setTimeout(() => {
                 GlobalVariables.isAutoPilot = false;
-                GlobalVariables.autoPilotSpeed = 0;
-              }, GlobalVariables.autoPilotSpeed / GlobalVariables.autoPilotAcceleration);
+                GlobalVariables.cameraSpeed = 0;
+              }, (GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraAutopilotAcceleration);
             } else {
-              GlobalVariables.autoPilotBrakesInitiated = false;
+              GlobalVariables.cameraBrakesInitiated = false;
               GlobalVariables.isAutoPilot = true;
             }
-            setIsAutoPilot(!GlobalVariables.autoPilotBrakesInitiated);
+            setIsAutoPilot(!GlobalVariables.cameraBrakesInitiated);
           }}
           tip="Auto-pilot mode: Just steer"
           showTipOnActive={true}
@@ -107,7 +105,7 @@ const BasePage = () => {
           handler={() => {
             setIsSaving(true);
           }}
-          tip="Want your creation to be seen by everyone? Just save your settings and share away!"
+          tip="Want your creation to be seen by everyone? Upload your creation!"
         />
 
         <IconButton

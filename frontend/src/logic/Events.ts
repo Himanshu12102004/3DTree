@@ -4,6 +4,9 @@ export default class Events {
   static dragStartPos = { x: 0, y: 0 };
   static hasPassedDragThreshold = false;
   static DRAG_THRESHOLD = 3;
+  static isUpArrowPressed = false;
+  static isDownArrowPressed = false;
+  static areBrakesInitiated = false;
   static getDirectionVector(
     angleXZ: number,
     angleYZ: number
@@ -31,10 +34,27 @@ export default class Events {
   }
 
   static attachEvents() {
-    this.addEvent("mousedown", Events.panStartCallback);
-    this.addEvent("mousemove", Events.panDragCallback);
+    this.addEvent("click", () => {
+      GlobalVariables.canvas.requestPointerLock();
+    });
     window.addEventListener("resize", Events.resize);
     window.addEventListener("keydown", Events.keydownCallBack);
+    window.addEventListener("keyup", Events.keyupCallBack);
+    document.addEventListener("pointerlockchange", () => {
+      if (document.pointerLockElement === GlobalVariables.canvas) {
+        document.addEventListener(
+          "mousemove",
+          Events.cameraDirectionHandler,
+          false
+        );
+      } else {
+        document.removeEventListener(
+          "mousemove",
+          Events.cameraDirectionHandler,
+          false
+        );
+      }
+    });
   }
 
   static addEvent<K extends keyof HTMLElementEventMap>(
@@ -63,32 +83,58 @@ export default class Events {
     );
   }
   static keydownCallBack(e: KeyboardEvent) {
-    if (e.key == "ArrowUp") {
-      const speed =
-        (GlobalVariables.cellDimensions[0] +
-          GlobalVariables.cellDimensions[1] +
-          GlobalVariables.cellDimensions[2]) /
-        100;
-      Events.moveInDirecionOfCamera(speed);
-    } else if (e.key == "ArrowDown") {
-      const speed = -(
-        (GlobalVariables.cellDimensions[0] +
-          GlobalVariables.cellDimensions[1] +
-          GlobalVariables.cellDimensions[2]) /
-        100
+    if (GlobalVariables.isAutoPilot) return;
+    if (
+      e.key == "ArrowUp" &&
+      (!Events.isUpArrowPressed || GlobalVariables.cameraBrakesInitiated)
+    ) {
+      Events.isUpArrowPressed = true;
+      Events.isDownArrowPressed = false;
+      GlobalVariables.cameraBrakesInitiated = false;
+    } else if (
+      e.key == "ArrowDown" &&
+      (!Events.isDownArrowPressed || GlobalVariables.cameraBrakesInitiated)
+    ) {
+      Events.isDownArrowPressed = true;
+      Events.isUpArrowPressed = false;
+      GlobalVariables.cameraBrakesInitiated = false;
+    } else if (e.key == "r") {
+      GlobalVariables.cameraPosition = [
+        GlobalVariables.cellDimensions[0],
+        10,
+        0,
+      ];
+      GlobalVariables.cameraDirection = [0, 0];
+      GlobalVariables.gl.uniform3f(
+        GlobalVariables.uniforms.cameraPosition!,
+        GlobalVariables.cameraPosition[0],
+        GlobalVariables.cameraPosition[1],
+        GlobalVariables.cameraPosition[2]
       );
-      Events.moveInDirecionOfCamera(speed);
+      GlobalVariables.gl.uniform2f(
+        GlobalVariables.uniforms.cameraDirection!,
+        GlobalVariables.cameraDirection[0],
+        GlobalVariables.cameraDirection[1]
+      );
     }
   }
-  
-  static panDragCallback(e: MouseEvent) {
-    if ((e.buttons & 1) === 0) {
-      Events.hasPassedDragThreshold = false;
-      return;
+  static keyupCallBack(e: KeyboardEvent) {
+    if (GlobalVariables.isAutoPilot) return;
+    if (e.key == "ArrowUp") {
+      GlobalVariables.cameraBrakesInitiated = true;
+      setTimeout(() => {
+        Events.isUpArrowPressed = false;
+      }, (GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraKeypressAcceleration);
+    } else if (e.key == "ArrowDown") {
+      GlobalVariables.cameraBrakesInitiated = true;
+      setTimeout(() => {
+        Events.isDownArrowPressed = false;
+      }, (-GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraKeypressAcceleration);
     }
-
-    const dx = e.clientX - Events.dragStartPos.x;
-    const dy = e.clientY - Events.dragStartPos.y;
+  }
+  static cameraDirectionHandler(e: MouseEvent) {
+    const dx = e.movementX;
+    const dy = e.movementY;
     const sensitivity = 0.005;
 
     GlobalVariables.cameraDirection[0] += dx * sensitivity;

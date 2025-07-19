@@ -28,10 +28,9 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
   const [showNextButton, setShowNextButton] = useState(false);
   return (
     <div>
-      <div className="absolute top-0 right-0 left-0 bottom-0 backdrop-blur-xs bg-[rgba(0,0,0,0.5)] z-20"></div>
       <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-40">
         <div
-          className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4"
+          className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4 text-2xl"
           style={{ transition: "all 0.5s ease-in-out" }}
         >
           <div>
@@ -89,7 +88,7 @@ const Tutorial: React.FC<TutorialArgs> = ({
 
   return (
     <div>
-      {/* <div className="absolute z-30 top-0 left-0 right-0 bottom-0 backdrop-blur-xs"></div> */}
+      <div className="absolute z-30 top-0 left-0 right-0 bottom-0 backdrop-blur-xs bg-[rgba(0,0,0,0.3)]"></div>
       {!seenTutorial && (
         <TutorialPage
           text={tutorialText[currentPage]}

@@ -1,4 +1,3 @@
-
 interface Dimensions {
   height: number;
   width: number;
@@ -60,10 +59,12 @@ class GlobalVariables {
   static isAutoPilot = false;
   static isBreathing = true;
   static breathingITime = 0;
-  static autoPilotAcceleration = 0.0001;
-  static autoPilotSpeed = 0;
-  static autoPilotBrakesInitiated = false;
-
+  static cameraAutopilotAcceleration = 2;
+  static cameraKeypressAcceleration = 10;
+  static cameraSpeed = 0;
+  static maxCameraSpeed: number;
+  static cameraBrakesInitiated = false;
+  static areKeysUsedForNavigation = false;
   static init(canvas: HTMLCanvasElement, canvasParent: HTMLDivElement) {
     this.canvas = canvas;
     this.canvasParent = canvasParent;
@@ -91,6 +92,9 @@ class GlobalVariables {
     this.navigationSpeed = 10;
     this.isInitialized = true;
     this.maxRayMarch = 80;
+    this.maxCameraSpeed =
+      (this.cellDimensions[0] + this.cellDimensions[2]) * 0.4;
+    this.currentFps = 60;
   }
 }
 export default GlobalVariables;

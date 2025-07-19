@@ -9,6 +9,7 @@ import { RxDimensions, RxHeight } from "react-icons/rx";
 import { WiStrongWind } from "react-icons/wi";
 import { FaTimes } from "react-icons/fa";
 import { HiOutlineLightBulb } from "react-icons/hi";
+import { MdSpeed } from "react-icons/md";
 type MenuBarProps = {
   setIsSettingsOpen: (value: boolean) => void;
   isSettingsOpen: boolean;
@@ -28,6 +29,7 @@ const MenuBar: React.FC<MenuBarProps> = ({
   const [opSmoothRatio, setOpSmoothRatio] = useState(0);
   const [rootRadius, setRootRadius] = useState(0);
   const [rootHeight, setRootHeight] = useState(0);
+  const [maxCameraSpeed, setMaxCameraSpeed] = useState(0);
   const [rootColor, setRootColor] = useState([0, 0, 0] as [
     number,
     number,
@@ -63,6 +65,7 @@ const MenuBar: React.FC<MenuBarProps> = ({
     setCellDimensionsX(GlobalVariables.cellDimensions[0]);
     setCellDimensionsZ(GlobalVariables.cellDimensions[2]);
     setMaxRayMarch(GlobalVariables.maxRayMarch);
+    setMaxCameraSpeed(GlobalVariables.maxCameraSpeed);
   }, [GlobalVariables.isInitialized, GlobalVariables.isConfigurationChanged]);
 
   const handleAngleXChange = (e: Event, value: number) => {
@@ -145,6 +148,9 @@ const MenuBar: React.FC<MenuBarProps> = ({
 
   const handleCellDimensionsChangeX = (_: Event, value: number) => {
     GlobalVariables.cellDimensions[0] = value;
+
+    GlobalVariables.maxCameraSpeed =
+      GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2];
     GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cellDimensions!,
       value,
@@ -156,6 +162,9 @@ const MenuBar: React.FC<MenuBarProps> = ({
 
   const handleCellDimensionsChangeZ = (_: Event, value: number) => {
     GlobalVariables.cellDimensions[2] = value;
+
+    GlobalVariables.maxCameraSpeed =
+      GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2];
     GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cellDimensions!,
       GlobalVariables.cellDimensions[0],
@@ -169,6 +178,11 @@ const MenuBar: React.FC<MenuBarProps> = ({
     GlobalVariables.maxRayMarch = value;
     GlobalVariables.gl.uniform1i(GlobalVariables.uniforms.maxRayMarch!, value);
     setMaxRayMarch(value);
+  };
+
+  const handleMaxCameraSpeed = (_: Event, value: number) => {
+    GlobalVariables.maxCameraSpeed = value;
+    setMaxCameraSpeed(value);
   };
 
   return (
@@ -290,6 +304,15 @@ const MenuBar: React.FC<MenuBarProps> = ({
               value={maxRayMarch}
               handler={handleMaxRayMarch}
               Icon={HiOutlineLightBulb}
+            />
+            <Slider
+              header="Auto Pilot speed"
+              minimum={0}
+              maximum={100}
+              step={0.00001}
+              value={maxCameraSpeed}
+              handler={handleMaxCameraSpeed}
+              Icon={MdSpeed}
             />
             <div>
               <div className="text-foreground">Root Color</div>

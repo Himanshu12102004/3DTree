@@ -203,7 +203,7 @@ class Engine {
     const animate = () => {
       const now = performance.now();
       const delta = now - lastTime;
-      const deltaPerFrame = now - lastFrameTime;
+      const deltaPerFrame = (now - lastFrameTime) * 0.001;
       lastFrameTime = now;
       frameCount++;
       if (delta >= 1000) {
@@ -214,32 +214,79 @@ class Engine {
         GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
       }
       if (GlobalVariables.isAutoPilot) {
-        if (!GlobalVariables.autoPilotBrakesInitiated) {
-          GlobalVariables.autoPilotSpeed +=
-            GlobalVariables.autoPilotAcceleration * deltaPerFrame;
-          GlobalVariables.autoPilotSpeed = Math.min(
-            (GlobalVariables.cellDimensions[0] +
-              GlobalVariables.cellDimensions[2]) /
-              (3 * fps),
-            GlobalVariables.autoPilotSpeed
+        if (!GlobalVariables.cameraBrakesInitiated) {
+          GlobalVariables.cameraSpeed +=
+            GlobalVariables.cameraAutopilotAcceleration * deltaPerFrame;
+          GlobalVariables.cameraSpeed = Math.min(
+            GlobalVariables.maxCameraSpeed,
+            GlobalVariables.cameraSpeed
           );
         } else {
-          GlobalVariables.autoPilotSpeed -=
-            GlobalVariables.autoPilotAcceleration * deltaPerFrame;
-          GlobalVariables.autoPilotSpeed = Math.max(
+          console.log(
+            GlobalVariables.cameraAutopilotAcceleration,
+            deltaPerFrame,
+            GlobalVariables.cameraSpeed
+          );
+          GlobalVariables.cameraSpeed -=
+            GlobalVariables.cameraAutopilotAcceleration * deltaPerFrame;
+          console.log(GlobalVariables.cameraSpeed);
+          GlobalVariables.cameraSpeed = Math.max(
             0,
-            GlobalVariables.autoPilotSpeed
+            GlobalVariables.cameraSpeed
           );
         }
-        Events.moveInDirecionOfCamera(GlobalVariables.autoPilotSpeed);
+        Events.moveInDirecionOfCamera(
+          GlobalVariables.cameraSpeed * deltaPerFrame
+        );
+      } else {
+        if (Events.isUpArrowPressed) {
+          if (!GlobalVariables.cameraBrakesInitiated) {
+            GlobalVariables.cameraSpeed +=
+              GlobalVariables.cameraKeypressAcceleration * deltaPerFrame;
+            GlobalVariables.cameraSpeed = Math.min(
+              GlobalVariables.maxCameraSpeed,
+              GlobalVariables.cameraSpeed
+            );
+          } else {
+            GlobalVariables.cameraSpeed -=
+              GlobalVariables.cameraKeypressAcceleration * deltaPerFrame;
+            GlobalVariables.cameraSpeed = Math.max(
+              0,
+              GlobalVariables.cameraSpeed
+            );
+          }
+          Events.moveInDirecionOfCamera(
+            GlobalVariables.cameraSpeed * deltaPerFrame
+          );
+        } else if (Events.isDownArrowPressed) {
+          if (!GlobalVariables.cameraBrakesInitiated) {
+            GlobalVariables.cameraSpeed -=
+              GlobalVariables.cameraKeypressAcceleration * deltaPerFrame;
+            GlobalVariables.cameraSpeed = Math.max(
+              -GlobalVariables.maxCameraSpeed,
+              GlobalVariables.cameraSpeed
+            );
+          } else {
+            GlobalVariables.cameraSpeed +=
+              GlobalVariables.cameraKeypressAcceleration * deltaPerFrame;
+            GlobalVariables.cameraSpeed = Math.min(
+              0,
+              GlobalVariables.cameraSpeed
+            );
+          }
+          Events.moveInDirecionOfCamera(
+            GlobalVariables.cameraSpeed * deltaPerFrame
+          );
+        }
       }
       if (GlobalVariables.isBreathing) {
         GlobalVariables.breathingITime += deltaPerFrame;
-        const breathingSinParam = GlobalVariables.breathingITime / 2000;
+        const breathingSinParam = GlobalVariables.breathingITime/2;
         GlobalVariables.rootRadiusForBreathing =
           GlobalVariables.rootRadius + Math.sin(breathingSinParam) * 0.7;
         GlobalVariables.rootHeightForBreathing =
           GlobalVariables.rootHeight + Math.sin(breathingSinParam) * 0.7;
+        console.log(breathingSinParam);
         GlobalVariables.gl.uniform1f(
           GlobalVariables.uniforms.rootHeight!,
           GlobalVariables.rootHeightForBreathing
