@@ -206,13 +206,13 @@ class Engine {
       const deltaPerFrame = (now - lastFrameTime) * 0.001;
       lastFrameTime = now;
       frameCount++;
-      // if (delta >= 1000) {
-      //   fps = frameCount;
-      //   frameCount = 0;
-      //   lastTime = now;
-      //   GlobalVariables.currentFps = fps;
-      //   GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
-      // }
+      if (delta >= 1000) {
+        fps = frameCount;
+        frameCount = 0;
+        lastTime = now;
+        GlobalVariables.currentFps = fps;
+        GlobalVariables.fpsMeter.innerHTML = `${GlobalVariables.currentFps} FPS`;
+      }
       if (GlobalVariables.isAutoPilot) {
         if (!GlobalVariables.cameraBrakesInitiated) {
           GlobalVariables.cameraSpeed +=
