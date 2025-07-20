@@ -314,7 +314,7 @@ class Engine {
       }, "image/png");
     });
   };
-  
+
   static downloadCanvasImage = async () => {
     const blob = await Engine.getCanvasBlob();
 

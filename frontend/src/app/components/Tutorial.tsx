@@ -7,6 +7,7 @@ const tutorialText = [
   "Hello, I am Himanshu, the creator of this strange planet. I will be your guide and help you navigate through its mysteries.",
   "To look around the world, move your mouse in the scene.",
   "To move around in the scene use the up/down arrow keys.",
+  "If you are stuck in the dark just press 'R' key.",
   "This is not a game, but a journey of exploration. There are no enemies or challenges, just the beauty of the world around you.",
 ];
 
@@ -33,6 +34,9 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
           className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4 text-[1.3rem]"
           style={{ transition: "all 0.5s ease-in-out" }}
         >
+          {(currentPage >= 2 && currentPage <= 4) && (
+            <div className="text-3xl font-bold">Tutorial</div>
+          )}
           <div>
             <Typewriter
               key={text}
