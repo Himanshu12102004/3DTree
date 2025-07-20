@@ -150,7 +150,8 @@ const MenuBar: React.FC<MenuBarProps> = ({
     GlobalVariables.cellDimensions[0] = value;
 
     GlobalVariables.maxCameraSpeed =
-      GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2];
+      (GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2]) *
+      0.4;
     GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cellDimensions!,
       value,
@@ -162,9 +163,10 @@ const MenuBar: React.FC<MenuBarProps> = ({
 
   const handleCellDimensionsChangeZ = (_: Event, value: number) => {
     GlobalVariables.cellDimensions[2] = value;
-
     GlobalVariables.maxCameraSpeed =
-      GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2];
+      (GlobalVariables.cellDimensions[0] + GlobalVariables.cellDimensions[2]) *
+      0.4;
+
     GlobalVariables.gl.uniform3f(
       GlobalVariables.uniforms.cellDimensions!,
       GlobalVariables.cellDimensions[0],

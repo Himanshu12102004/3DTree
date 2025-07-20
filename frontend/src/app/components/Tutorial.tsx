@@ -5,8 +5,8 @@ import Button from "./Button";
 const tutorialText = [
   "Welcome to Orbix-22, a breathing planet of glowing trees, shifting gravity, and living crystals. Here time distorts, mists swirl, and the land whispers secrets. Are you ready to explore?",
   "Hello, I am Himanshu, the creator of this strange planet. I will be your guide and help you navigate through its mysteries.",
-  "To look around the world, drag your mouse or trackpad in the direction you want to look.",
-  "To move forward, press the Up arrow key on your keyboard, to move backward, press the Down arrow key.",
+  "To look around the world, move your mouse in the scene.",
+  "To move around in the scene use the up/down arrow keys.",
   "This is not a game, but a journey of exploration. There are no enemies or challenges, just the beauty of the world around you.",
 ];
 
@@ -30,7 +30,7 @@ const TutorialPage: React.FC<TutorialPageProps> = ({
     <div>
       <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-40">
         <div
-          className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4 text-2xl"
+          className=" p-7 max-w-[450px] leading-relaxed text-foreground text-center flex flex-col gap-4 text-[1.3rem]"
           style={{ transition: "all 0.5s ease-in-out" }}
         >
           <div>

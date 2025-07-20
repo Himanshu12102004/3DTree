@@ -76,15 +76,15 @@ const SaveThePattern = ({ setIsSaving }: SaveThePatternProps) => {
     } else {
       toast.error("Failed to save creation.");
     }
-
     setIsLoading(false);
+    Engine.play();
   };
 
   return (
     <div>
       <div className="absolute top-0 left-0 bottom-0 right-0 z-30 bg-[rgba(0,0,0,0.5)] backdrop-blur-xs"></div>
       <div className="absolute top-1/2 left-1/2 z-40 transform -translate-x-1/2 -translate-y-1/2 flex flex-col p-10 gap-5 items-center bg-black">
-        <div className="text-2xl">Save your creation</div>
+        <div className="text-2xl">Upload the current creation</div>
         <input
           type="text"
           value={name}
@@ -121,7 +121,10 @@ const SaveThePattern = ({ setIsSaving }: SaveThePatternProps) => {
           <Button
             text="Cancel"
             shouldShow={true}
-            handler={() => setIsSaving(false)}
+            handler={() => {
+              setIsSaving(false);
+              Engine.play();
+            }}
           />
           <Button
             text="Save"

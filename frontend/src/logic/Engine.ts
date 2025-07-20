@@ -314,5 +314,20 @@ class Engine {
       }, "image/png");
     });
   };
+  
+  static downloadCanvasImage = async () => {
+    const blob = await Engine.getCanvasBlob();
+
+    if (!blob) return;
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "canvas-image.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
 }
 export default Engine;

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Canvas } from "./components/Canvas";
 import { FaSave, FaSlash } from "react-icons/fa";
+import { FaDownload, FaUpload } from "react-icons/fa6";
 import { IconButton, ToggleIcon } from "./components/Icons";
 import MenuBar from "./components/MenuBar";
 import GlobalVariables from "@/logic/GlobalVariables";
@@ -101,8 +102,16 @@ const BasePage = () => {
         />
 
         <IconButton
-          Icon={FaSave}
+          Icon={FaDownload}
           handler={() => {
+            Engine.downloadCanvasImage();
+          }}
+          tip="Want to make this your wallpaper? Just download it."
+        />
+        <IconButton
+          Icon={FaUpload}
+          handler={() => {
+            Engine.pause();
             setIsSaving(true);
           }}
           tip="Want your creation to be seen by everyone? Upload your creation!"
