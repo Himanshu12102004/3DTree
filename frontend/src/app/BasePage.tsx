@@ -85,7 +85,6 @@ const BasePage = () => {
               GlobalVariables.cameraBrakesInitiated = false;
               GlobalVariables.isAutoPilot = true;
             }
-            console.log("Auto", GlobalVariables.isAutoPilot);
           }}
           tip="Auto-pilot mode: Just steer"
           showTipOnActive={true}
