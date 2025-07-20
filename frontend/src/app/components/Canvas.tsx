@@ -12,7 +12,7 @@ export const CanvasWrapper = ({ children }: CanvasWrapperProps) => {
   return <div className="canvas-parent h-screen">{children}</div>;
 };
 export const Canvas = () => {
-  const [isRestricted, setIsRestricted] = useState(false);
+  const [isRestricted,setIsRestricted]=useState(false)
   useEffect(() => {
     const run = async () => {
       const canvas = document.querySelector(".canvas") as HTMLCanvasElement;
@@ -20,7 +20,7 @@ export const Canvas = () => {
         ".canvas-parent"
       ) as HTMLDivElement;
       GlobalVariables.init(canvas, canvasParent);
-      if (GlobalVariables.dimensions.width < 500) {
+      if(GlobalVariables.dimensions.width<500){
         setIsRestricted(true);
         return;
       }
@@ -34,11 +34,7 @@ export const Canvas = () => {
 
   return (
     <CanvasWrapper>
-      {isRestricted && (
-        <div className="absolute top-0 left-0 bottom-0 right-0 z-50 bg-black flex items-center justify-center text-3xl text-center">
-          Sorry, this page cannot be viewed on a phone use a desktop
-        </div>
-      )}
+      {isRestricted&&<div className="absolute top-0 left-0 bottom-0 right-0 z-40 bg-black flex items-center justify-center text-3xl text-center">Sorry, this page cannot be viewed on a phone use a desktop</div>}
       <canvas className="canvas z-0" />
     </CanvasWrapper>
   );
