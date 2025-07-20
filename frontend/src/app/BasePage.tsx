@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Canvas } from "./components/Canvas";
-import { FaSave, FaSlash } from "react-icons/fa";
+import { FaSlash } from "react-icons/fa";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import { IconButton, ToggleIcon } from "./components/Icons";
 import MenuBar from "./components/MenuBar";
