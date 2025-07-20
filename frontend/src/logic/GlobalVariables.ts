@@ -63,8 +63,11 @@ class GlobalVariables {
   static cameraKeypressAcceleration = 10;
   static cameraSpeed = 0;
   static maxCameraSpeed: number;
-  static cameraBrakesInitiated = false;
+  static cameraBrakesInitiated = true;
   static areKeysUsedForNavigation = false;
+  static autoPilotTimeOut: NodeJS.Timeout;
+  static downArrowTimeOut: NodeJS.Timeout;
+  static upArrowTimeOut: NodeJS.Timeout;
   static init(canvas: HTMLCanvasElement, canvasParent: HTMLDivElement) {
     this.canvas = canvas;
     this.canvasParent = canvasParent;

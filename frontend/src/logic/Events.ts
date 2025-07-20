@@ -83,28 +83,15 @@ export default class Events {
     );
   }
   static keydownCallBack(e: KeyboardEvent) {
-    if (GlobalVariables.isAutoPilot) return;
-    if (
-      e.key == "ArrowUp" &&
-      (!Events.isUpArrowPressed || GlobalVariables.cameraBrakesInitiated)
-    ) {
-      Events.isUpArrowPressed = true;
-      Events.isDownArrowPressed = false;
-      GlobalVariables.cameraBrakesInitiated = false;
-    } else if (
-      e.key == "ArrowDown" &&
-      (!Events.isDownArrowPressed || GlobalVariables.cameraBrakesInitiated)
-    ) {
-      Events.isDownArrowPressed = true;
-      Events.isUpArrowPressed = false;
-      GlobalVariables.cameraBrakesInitiated = false;
-    } else if (e.key == "r") {
+    if (e.key == "r" || e.key == "R") {
+      GlobalVariables.isAutoPilot = false;
+      GlobalVariables.cameraBrakesInitiated = true;
       GlobalVariables.cameraPosition = [
-        GlobalVariables.cellDimensions[0],
-        10,
+        0,
+        GlobalVariables.rootHeight * GlobalVariables.iterationCount,
         0,
       ];
-      GlobalVariables.cameraDirection = [0, 0];
+      GlobalVariables.cameraDirection = [Math.PI / 2, 0];
       GlobalVariables.gl.uniform3f(
         GlobalVariables.uniforms.cameraPosition!,
         GlobalVariables.cameraPosition[0],
@@ -117,24 +104,44 @@ export default class Events {
         GlobalVariables.cameraDirection[1]
       );
     }
+    if (GlobalVariables.isAutoPilot) return;
+    if (
+      e.key == "ArrowUp" &&
+      (!Events.isUpArrowPressed || GlobalVariables.cameraBrakesInitiated)
+    ) {
+      Events.isUpArrowPressed = true;
+      Events.isDownArrowPressed = false;
+      GlobalVariables.cameraBrakesInitiated = false;
+      clearTimeout(GlobalVariables.upArrowTimeOut);
+      clearTimeout(GlobalVariables.downArrowTimeOut);
+    } else if (
+      e.key == "ArrowDown" &&
+      (!Events.isDownArrowPressed || GlobalVariables.cameraBrakesInitiated)
+    ) {
+      Events.isDownArrowPressed = true;
+      Events.isUpArrowPressed = false;
+      GlobalVariables.cameraBrakesInitiated = false;
+      clearTimeout(GlobalVariables.upArrowTimeOut);
+      clearTimeout(GlobalVariables.downArrowTimeOut);
+    }
   }
   static keyupCallBack(e: KeyboardEvent) {
     if (GlobalVariables.isAutoPilot) return;
     if (e.key == "ArrowUp") {
       GlobalVariables.cameraBrakesInitiated = true;
-      setTimeout(() => {
+      GlobalVariables.upArrowTimeOut = setTimeout(() => {
         Events.isUpArrowPressed = false;
       }, (GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraKeypressAcceleration);
     } else if (e.key == "ArrowDown") {
       GlobalVariables.cameraBrakesInitiated = true;
-      setTimeout(() => {
+      GlobalVariables.downArrowTimeOut = setTimeout(() => {
         Events.isDownArrowPressed = false;
       }, (-GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraKeypressAcceleration);
     }
   }
   static cameraDirectionHandler(e: MouseEvent) {
-    const dx = e.movementX*0.6;
-    const dy = e.movementY*0.6;
+    const dx = e.movementX * 0.6;
+    const dy = e.movementY * 0.6;
     const sensitivity = 0.005;
 
     GlobalVariables.cameraDirection[0] += dx * sensitivity;

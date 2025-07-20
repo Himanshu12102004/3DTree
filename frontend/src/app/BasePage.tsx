@@ -73,17 +73,19 @@ const BasePage = () => {
           IconOff={createSlashedIcon(IoCarSport)}
           currentState={isAutoPilot}
           handler={() => {
-            if (GlobalVariables.isAutoPilot) {
+            setIsAutoPilot(GlobalVariables.cameraBrakesInitiated);
+            if (!GlobalVariables.cameraBrakesInitiated) {
               GlobalVariables.cameraBrakesInitiated = true;
-              setTimeout(() => {
+              GlobalVariables.autoPilotTimeOut = setTimeout(() => {
                 GlobalVariables.isAutoPilot = false;
                 GlobalVariables.cameraSpeed = 0;
               }, (GlobalVariables.cameraSpeed * 1000) / GlobalVariables.cameraAutopilotAcceleration);
             } else {
+              clearTimeout(GlobalVariables.autoPilotTimeOut);
               GlobalVariables.cameraBrakesInitiated = false;
               GlobalVariables.isAutoPilot = true;
             }
-            setIsAutoPilot(!GlobalVariables.cameraBrakesInitiated);
+            console.log("Auto", GlobalVariables.isAutoPilot);
           }}
           tip="Auto-pilot mode: Just steer"
           showTipOnActive={true}
