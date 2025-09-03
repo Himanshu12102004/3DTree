@@ -5,6 +5,8 @@ out vec4 fragColor;
 uniform vec3 cameraPosition;
 uniform vec2 cameraDirection;
 
+uniform int repetition;
+
 uniform vec2 viewportDimensions;
 
 uniform float angleX;
@@ -49,6 +51,7 @@ float SDF(vec3 p){
   vec3 q=p;
   // q.z += iTime*cellDimensions.z*0.5;
   // Modular repetition with centering
+  if(repetition==1)
   q.xz = mod(q.xz + 0.5 * cellDimensions.xz, cellDimensions.xz) - 0.5 * cellDimensions.xz;
   
   float root = sdCappedCylinder(q,lastHeight,lastRadius);

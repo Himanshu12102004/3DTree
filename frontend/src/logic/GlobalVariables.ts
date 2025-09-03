@@ -18,6 +18,7 @@ interface UniformLocations {
   dampeningFactor?: WebGLUniformLocation;
   cellDimensions?: WebGLUniformLocation;
   maxRayMarch?: WebGLUniformLocation;
+  repetition?: WebGLUniformLocation;
 }
 interface Point {
   x: number;
@@ -68,6 +69,7 @@ class GlobalVariables {
   static autoPilotTimeOut: NodeJS.Timeout;
   static downArrowTimeOut: NodeJS.Timeout;
   static upArrowTimeOut: NodeJS.Timeout;
+  static repetition: number;
   static init(canvas: HTMLCanvasElement, canvasParent: HTMLDivElement) {
     this.canvas = canvas;
     this.canvasParent = canvasParent;
@@ -98,6 +100,7 @@ class GlobalVariables {
     this.maxCameraSpeed =
       (this.cellDimensions[0] + this.cellDimensions[2]) * 0.4;
     this.currentFps = 60;
+    this.repetition = 1;
   }
 }
 export default GlobalVariables;

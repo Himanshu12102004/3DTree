@@ -10,6 +10,10 @@ import { WiStrongWind } from "react-icons/wi";
 import { FaTimes } from "react-icons/fa";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { MdSpeed } from "react-icons/md";
+import { ToggleButton } from "@mui/material";
+import RepetitionToggle from "./Toggler";
+import Toggler from "./Toggler";
+
 type MenuBarProps = {
   setIsSettingsOpen: (value: boolean) => void;
   isSettingsOpen: boolean;
@@ -67,6 +71,14 @@ const MenuBar: React.FC<MenuBarProps> = ({
     setMaxRayMarch(GlobalVariables.maxRayMarch);
     setMaxCameraSpeed(GlobalVariables.maxCameraSpeed);
   }, [GlobalVariables.isInitialized, GlobalVariables.isConfigurationChanged]);
+
+  const handleRepetitionChange = () => {
+    GlobalVariables.repetition = GlobalVariables.repetition === 1 ? 0 : 1;
+    GlobalVariables.gl.uniform1i(
+      GlobalVariables.uniforms.repetition!,
+      GlobalVariables.repetition
+    );
+  };
 
   const handleAngleXChange = (e: Event, value: number) => {
     GlobalVariables.angleX = value;
@@ -212,6 +224,11 @@ const MenuBar: React.FC<MenuBarProps> = ({
           </div>
 
           <div className="pt-6 flex flex-col gap-2">
+            <Toggler
+              head="Repetition"
+              options={["Yes", "No"]}
+              handler={handleRepetitionChange}
+            ></Toggler>
             <Slider
               header="Angle-X"
               minimum={0}
@@ -220,7 +237,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleAngleXChange}
               Icon={PiAngle}
             />
-
             <Slider
               header="Angle-Z"
               minimum={0}
@@ -229,7 +245,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleAngleZChange}
               Icon={PiAngle}
             />
-
             <Slider
               header="Root Radius"
               minimum={0.5}
@@ -239,7 +254,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleRootRadiusChange}
               Icon={PiCompassTool}
             />
-
             <Slider
               header="Root Height"
               minimum={0.5}
@@ -249,7 +263,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleRootHeightChange}
               Icon={RxHeight}
             />
-
             <Slider
               header="Branching Levels"
               minimum={1}
@@ -258,7 +271,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleIterationCountChange}
               Icon={Tree}
             />
-
             <Slider
               header="Smoothing factor"
               minimum={0.000001}
@@ -268,7 +280,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleOpSmoothRatioChange}
               Icon={SlidersHorizontal}
             />
-
             <Slider
               header="Dampening Factor"
               minimum={0.01}
@@ -278,7 +289,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleDampeningFactorChange}
               Icon={WiStrongWind}
             />
-
             <Slider
               header="Cell Dimension-X"
               minimum={1}
@@ -288,7 +298,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               handler={handleCellDimensionsChangeX}
               Icon={RxDimensions}
             />
-
             <Slider
               header="Cell Dimension-Z"
               minimum={1}
@@ -320,7 +329,6 @@ const MenuBar: React.FC<MenuBarProps> = ({
               <div className="text-foreground">Root Color</div>
               <ColorPicker color={rootColor} handler={handleRootColorChange} />
             </div>
-
             <div>
               <div className="text-foreground">Branch Color</div>
               <ColorPicker

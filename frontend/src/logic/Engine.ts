@@ -109,6 +109,10 @@ class Engine {
         GlobalVariables.program,
         "maxRayMarch"
       ) as WebGLUniformLocation;
+    GlobalVariables.uniforms.repetition = GlobalVariables.gl.getUniformLocation(
+      GlobalVariables.program,
+      "repetition"
+    ) as WebGLUniformLocation;
     const canvasVerticies = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
     GlobalVariables.verticesVao = createVao(
       [
@@ -123,6 +127,7 @@ class Engine {
       ],
       GlobalVariables.gl
     ) as WebGLVertexArrayObject;
+    
     this.initializeUniforms();
   }
 
@@ -187,6 +192,7 @@ class Engine {
       GlobalVariables.cellDimensions[2]
     );
     gl.uniform1i(uniformLocations.maxRayMarch!, GlobalVariables.maxRayMarch);
+    gl.uniform1i(uniformLocations.repetition!, GlobalVariables.repetition);
   }
 
   static play() {
