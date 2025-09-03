@@ -10,8 +10,6 @@ import { WiStrongWind } from "react-icons/wi";
 import { FaTimes } from "react-icons/fa";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { MdSpeed } from "react-icons/md";
-import { ToggleButton } from "@mui/material";
-import RepetitionToggle from "./Toggler";
 import Toggler from "./Toggler";
 
 type MenuBarProps = {
